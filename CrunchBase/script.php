@@ -22,7 +22,8 @@ require_once 'phpdom.php';
 require_once 'functions.inc.php';
 
 $aC = array(
-	'url'=>'http://www.crunchbase.com/funding-rounds?'
+	'url'=>'http://www.crunchbase.com/funding-rounds?',
+	'apikey'=>'ahxcatmbhhr9nzzjrm8r65fg'
 );
 
 $queryOptions = array(
@@ -59,11 +60,12 @@ $namespaces = array(
 );
 
 function getEntityURL($namespace, $permalink){
-	return 'http://api.crunchbase.com/v/1/' . $namespace . '/' . $permalink . '.js';
+	global $aC;
+	return 'http://api.crunchbase.com/v/1/' . $namespace . '/' . $permalink . '.js?api_key=' . $aC['apikey'];
 }
 
 function crawlQuery(){
-	global $aC, $query;
+	global $aC, $query, $namespaces;
 	$page = getURL($aC['url'] . http_build_query($query));
 	$html = str_get_html($page);
 
@@ -77,10 +79,23 @@ function crawlQuery(){
 	foreach ($table->find('tr') as $index => $row) {
 		if ($index == 0) continue;
 		$td = $row->find('td');
-		$name = $td[1]->innertext;
-		$namehref = $td[1]->find('a', 0)->href;
-		$namearray = explode('/', $namehref);
-		$nameid = $namearray[count($namearray)-1];
+		$company = $td[1]->innertext;
+		$companyhref = $td[1]->find('a', 0)->href;
+		$companyarray = explode('/', $companyhref);
+		$companyid = $companyarray[count($companyarray)-1];
+		$companyjson = json_decode(getURL(getEntityURL($namespaces[0], $companyid)));
+		$location = "";
+		if (count($companyjson->offices)) {
+			$location = $companyjson->offices[0]->city . ', ' . $companyjson->offices[0]->state_code;
+		}
+		$companyinfo = array(
+			'number_of_employees'=>$companyjson->number_of_employees,
+			'founded_year'=>$companyjson->founded_year,
+    		'founded_month'=>$companyjson->founded_month,
+    		'founded_day'=>$companyjson->founded_day,
+    		'offices'=>$companyjson->offices,
+    		'location'=>$location
+		);
 		$investorsdom = $td[4]->find('a');
 		$investors = array();
 		foreach ($investorsdom as $index => $link) {
@@ -93,8 +108,9 @@ function crawlQuery(){
 		}
 		$info = removeTrimWhitespace(array(
 			'date'=>$td[0]->plaintext,
-			'name'=>$td[1]->plaintext,
-			'nameid'=>$nameid,
+			'company'=>$td[1]->plaintext,
+			'companyid'=>$companyid,
+			'companyinfo'=>$companyinfo,
 			'round'=>$td[2]->plaintext,
 			'size'=>$td[3]->plaintext,
 			'investors'=>$investors,
