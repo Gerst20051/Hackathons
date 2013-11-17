@@ -52,9 +52,36 @@ $query = array(
 	'q'=>''
 );
 
+
+
 $page = getURL($aC['url'] . http_build_query($query));
 $html = str_get_html($page);
 
-echo $html;
+$content = $html->find('div#col2_internal', 0);
+$table = $content->find('table', 0);
+
+$results = array();
+
+foreach ($table->find('tr') as $index => $row) {
+	if ($index == 0) continue;
+	$td = $row->find('td');
+	$name = $td[1]->innertext;
+	$namehref = $td[1]->find('a', 0)->href;
+	$namearray = explode('/', $namehref);
+	$nameid = $namearray[count($namearray)-1];
+	$investors = $td[4]->innertext;
+	$info = removeTrimWhitespace(array(
+		'date'=>$td[0]->plaintext,
+		'name'=>$td[1]->plaintext,
+		'nameid'=>$nameid,
+		'round'=>$td[2]->plaintext,
+		'size'=>$td[3]->plaintext,
+		'investors'=>$td[4]->plaintext,
+		'investorsid'=>$investors
+	));
+	array_push($results, $info);
+}
+
+print_json($results, false);
 ?>
 

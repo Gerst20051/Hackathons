@@ -24,5 +24,12 @@ function getJSON($url){
 	}
 }
 
+function removeTrimWhitespace($array){
+	foreach ($array as $key=>$value) {
+		$array[$key] = trim(preg_replace('/\s+/', ' ', $value));
+	}
+	return $array;
+}
+
 ?>
 
