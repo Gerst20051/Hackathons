@@ -1,7 +1,7 @@
 <?php
 function print_json($data, $die = true){
 	header('Content-Type: application/json; charset=utf8');
-	print_r(json_encode($data));
+	print_r(trim(json_encode($data)));
 	if ($die === true) die();
 }
 
@@ -26,7 +26,9 @@ function getJSON($url){
 
 function removeTrimWhitespace($array){
 	foreach ($array as $key=>$value) {
-		$array[$key] = trim(preg_replace('/\s+/', ' ', $value));
+		if (is_string($value)) {
+			$array[$key] = trim(preg_replace('/\s+/', ' ', $value));
+		}
 	}
 	return $array;
 }

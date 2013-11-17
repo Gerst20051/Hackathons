@@ -52,36 +52,59 @@ $query = array(
 	'q'=>''
 );
 
+$namespaces = array(
+	'company',
+	'person',
+	'financial-organization'
+);
 
-
-$page = getURL($aC['url'] . http_build_query($query));
-$html = str_get_html($page);
-
-$content = $html->find('div#col2_internal', 0);
-$table = $content->find('table', 0);
-
-$results = array();
-
-foreach ($table->find('tr') as $index => $row) {
-	if ($index == 0) continue;
-	$td = $row->find('td');
-	$name = $td[1]->innertext;
-	$namehref = $td[1]->find('a', 0)->href;
-	$namearray = explode('/', $namehref);
-	$nameid = $namearray[count($namearray)-1];
-	$investors = $td[4]->innertext;
-	$info = removeTrimWhitespace(array(
-		'date'=>$td[0]->plaintext,
-		'name'=>$td[1]->plaintext,
-		'nameid'=>$nameid,
-		'round'=>$td[2]->plaintext,
-		'size'=>$td[3]->plaintext,
-		'investors'=>$td[4]->plaintext,
-		'investorsid'=>$investors
-	));
-	array_push($results, $info);
+function getEntityURL($namespace, $permalink){
+	return 'http://api.crunchbase.com/v/1/' . $namespace . '/' . $permalink . '.js';
 }
 
-print_json($results, false);
+function crawlQuery(){
+	global $aC, $query;
+	$page = getURL($aC['url'] . http_build_query($query));
+	$html = str_get_html($page);
+
+	$content = $html->find('div#col2_internal', 0);
+	$table = $content->find('table', 0);
+
+	if (empty($table)) return;
+
+	$results = array();
+
+	foreach ($table->find('tr') as $index => $row) {
+		if ($index == 0) continue;
+		$td = $row->find('td');
+		$name = $td[1]->innertext;
+		$namehref = $td[1]->find('a', 0)->href;
+		$namearray = explode('/', $namehref);
+		$nameid = $namearray[count($namearray)-1];
+		$investorsdom = $td[4]->find('a');
+		$investors = array();
+		foreach ($investorsdom as $index => $link) {
+			$namearray = explode('/', $link->href);
+			$nameid = $namearray[count($namearray)-1];
+			array_push($investors, array(
+				'name'=>$link->plaintext,
+				'nameid'=>$nameid
+			));
+		}
+		$info = removeTrimWhitespace(array(
+			'date'=>$td[0]->plaintext,
+			'name'=>$td[1]->plaintext,
+			'nameid'=>$nameid,
+			'round'=>$td[2]->plaintext,
+			'size'=>$td[3]->plaintext,
+			'investors'=>$investors,
+		));
+		array_push($results, $info);
+	}
+
+	print_json($results);
+}
+
+crawlQuery();
 ?>
 
