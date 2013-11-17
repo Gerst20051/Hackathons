@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>CrunchBase</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+<style>
+body {
+background-color:#272521;
+cursor:default;
+font-family:arial,verdana;
+user-select:none;
+-khtml-user-select:none;
+-moz-user-select:none;
+-webkit-user-select:none;
+}
+
+#main {
+margin:0 auto;
+width:720px;
+}
+
+#main > header {
+font-size:20pt;
+font-weight:bold;
+margin:20px;
+}
+
+#main > header .leftheading {
+color:#a39c82;
+}
+
+#main > header .rightheading {
+color:#fffbef;
+}
+
+#search {
+color:#fff;
+}
+
+#content pre {
+color:#fff;
+display:block;
+font-family:"Courier New", Courier, monospace;
+white-space:pre;
+width:620px;
+word-wrap:break-word;
+}
+</style>
+</head>
+<body>
+<div id="main">
+<header><span class="leftheading">Crunch</span><span class="rightheading">Base</span></header>
+<article>
+<header>
+</header>
+<div id="search">
+Investment Round: <select id="round">
+<option value="all">All</option>
+<option value="seed">Seed</option>
+<option value="a">Round A</option>
+<option value="b">Round B</option>
+<option value="c">Round C</option>
+<option value="d">Round D</option>
+<option value="e">Round E</option>
+<option value="f">Round F</option>
+<option value="g">Round G</option>
+<option value="convertible">Convertible</option>
+<option value="unattributed">Unattributed</option>
+<option value="crowd">Crowd</option>
+<option value="partial">Partial</option>
+<option value="debt_round">Debt Round</option>
+<option value="grant">Grant</option>
+<option value="private_equity">Private Equity</option>
+<option value="post_ipo_equity">Post IPO Equity</option>
+<option value="post_ipo_debt">Post IPO Debt</option>
+</select>
+Page: <input id="page" type="text" value="1"/>
+<input id="b_search" type="submit" value="Search"/>
+</div>
+<div id="content"><pre>Click Search!</pre></div>
+</article>
+</div>
+<script>
+function loadData(){
+	var round = $("#round").val(),
+		page = $("#page").val();
+
+	$("#content pre").html('Loading...');
+	$.get('script.php', {q:round,page:page}, function(data){
+		$("#content pre").text(data);
+	});
+}
+
+$(document).ready(function(){
+	$("#b_search").click(loadData);
+});
+</script>
+</body>
+</html>
