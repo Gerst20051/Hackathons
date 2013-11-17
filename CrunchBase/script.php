@@ -49,8 +49,8 @@ $queryOptions = array(
 );
 
 $query = array(
-	'page'=>1,
-	'q'=>''
+	'page'=>2,
+	'q'=>'seed'
 );
 
 $namespaces = array(
@@ -95,12 +95,12 @@ function crawlQuery(){
 		$companyinfo = array(
 			'number_of_employees'=>$companyjson->number_of_employees,
 			'founded_year'=>$companyjson->founded_year,
-    		'founded_month'=>$companyjson->founded_month,
-    		'founded_day'=>$companyjson->founded_day,
-    		'offices'=>$companyjson->offices,
-    		'location'=>$location,
-    		'total_money_raised'=>$companyjson->total_money_raised,
-    		'ipo'=>$ipo
+			'founded_month'=>$companyjson->founded_month,
+			'founded_day'=>$companyjson->founded_day,
+			'offices'=>$companyjson->offices,
+			'location'=>$location,
+			'total_money_raised'=>$companyjson->total_money_raised,
+			'ipo'=>$ipo
 		);
 		$investorsdom = $td[4]->find('a');
 		$investors = array();
