@@ -15,7 +15,46 @@ Project Specifics:
 	This can take the form of receiving additional funding, an exit (acquisition/IPO), and so on.
 */
 
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 
+require_once 'phpdom.php';
+require_once 'functions.inc.php';
 
+$aC = array(
+	'url'=>'http://www.crunchbase.com/funding-rounds?'
+);
+
+$queryOptions = array(
+	'all',
+	'seed',
+	'angel',
+	'a',
+	'b',
+	'c',
+	'd',
+	'e',
+	'f',
+	'g',
+	'convertible',
+	'unattributed',
+	'crowd',
+	'partial',
+	'debt_round',
+	'grant',
+	'private_equity',
+	'post_ipo_equity',
+	'post_ipo_debt'
+);
+
+$query = array(
+	'page'=>1,
+	'q'=>''
+);
+
+$page = getURL($aC['url'] . http_build_query($query));
+$html = str_get_html($page);
+
+echo $html;
 ?>
 
