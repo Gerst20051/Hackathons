@@ -85,8 +85,12 @@ function crawlQuery(){
 		$companyid = $companyarray[count($companyarray)-1];
 		$companyjson = json_decode(getURL(getEntityURL($namespaces[0], $companyid)));
 		$location = "";
+		$ipo = null;
 		if (count($companyjson->offices)) {
 			$location = $companyjson->offices[0]->city . ', ' . $companyjson->offices[0]->state_code;
+		}
+		if (!empty($companyjson->ipo)) {
+			$ipo = $companyjson->ipo;
 		}
 		$companyinfo = array(
 			'number_of_employees'=>$companyjson->number_of_employees,
@@ -94,7 +98,9 @@ function crawlQuery(){
     		'founded_month'=>$companyjson->founded_month,
     		'founded_day'=>$companyjson->founded_day,
     		'offices'=>$companyjson->offices,
-    		'location'=>$location
+    		'location'=>$location,
+    		'total_money_raised'=>$companyjson->total_money_raised,
+    		'ipo'=>$ipo
 		);
 		$investorsdom = $td[4]->find('a');
 		$investors = array();
