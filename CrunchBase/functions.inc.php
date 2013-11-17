@@ -1,7 +1,12 @@
 <?php
 function print_json($data, $die = true){
 	header('Content-Type: application/json; charset=utf8');
-	print_r(trim(json_encode($data)));
+	print_r(trim(json_encode($data, JSON_PRETTY_PRINT)));
+	if ($die === true) die();
+}
+
+function print_jsonn($data, $die = true){
+	print_r(trim(json_encode($data, JSON_PRETTY_PRINT)));
 	if ($die === true) die();
 }
 

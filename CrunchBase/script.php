@@ -49,8 +49,8 @@ $queryOptions = array(
 );
 
 $query = array(
-	'page'=>2,
-	'q'=>'seed'
+	'page'=>isset($_GET['page']) ? $_GET['page'] : 1,
+	'q'=>isset($_GET['q']) ? $_GET['q'] : ''
 );
 
 $namespaces = array(
@@ -124,7 +124,7 @@ function crawlQuery(){
 		array_push($results, $info);
 	}
 
-	print_json($results);
+	print_jsonn($results);
 }
 
 crawlQuery();
