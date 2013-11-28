@@ -84,10 +84,15 @@ function crawlQuery(){
 		$companyarray = explode('/', $companyhref);
 		$companyid = $companyarray[count($companyarray)-1];
 		$companyjson = json_decode(getURL(getEntityURL($namespaces[0], $companyid)));
-		$location = "";
+		$location = '';
 		$ipo = null;
 		if (count($companyjson->offices)) {
-			$location = $companyjson->offices[0]->city . ', ' . $companyjson->offices[0]->state_code;
+			$location = $companyjson->offices[0]->city . ', ';
+			if ($companyjson->offices[0]->country_code == 'USA') {
+				$location .= $companyjson->offices[0]->state_code;
+			} else {
+				$location .= $companyjson->offices[0]->country_code;
+			}
 		}
 		if (!empty($companyjson->ipo)) {
 			$ipo = $companyjson->ipo;
@@ -119,9 +124,18 @@ function crawlQuery(){
 			'companyinfo'=>$companyinfo,
 			'round'=>$td[2]->plaintext,
 			'size'=>$td[3]->plaintext,
-			'investors'=>$investors,
+			'investors'=>$investors
 		));
-		array_push($results, $info);
+		$datatable = removeTrimWhitespace(array(
+			'date'=>$td[0]->plaintext,
+			'company'=>$td[1]->plaintext,
+			'employees'=>intval($companyinfo['number_of_employees']),
+			'location'=>$location,
+			'round'=>$td[2]->plaintext,
+			'size'=>$td[3]->plaintext,
+			'investors'=>count($investors)
+		));
+		array_push($results, $datatable);
 	}
 
 	print_jsonn($results);
