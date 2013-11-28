@@ -12,7 +12,7 @@ font-size:14px;
 
 #main {
 margin:0 auto;
-width:720px;
+width:1024px;
 }
 
 #main > header {
@@ -35,7 +35,6 @@ color:#fff;
 
 .datatable {
 margin:40px auto;
-width:1024px;
 }
 
 .datatable table {
@@ -188,13 +187,16 @@ Page: <input id="page" type="text" value="1"/>
 </article>
 </div>
 <script>
+var datatable = new DataTable();
+datatable.config("#datatable");
+
 function loadData(){
 	var round = $("#round").val(),
 		page = $("#page").val();
 
 	$("#content pre").html('Loading...');
-	$.get('script.php', {q:round,page:page}, function(data){
-
+	$.getJSON('script.php', {q:round,page:page}, function(data){
+		datatable.updateData(data);
 		$("#content pre").text(data);
 	});
 }
