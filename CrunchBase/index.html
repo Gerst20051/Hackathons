@@ -183,8 +183,8 @@ Investment Round: <select id="round">
 Page: <input id="page" type="text" value="1"/>
 <input id="b_search" type="submit" value="Search"/>
 </div>
-<div id="datatable" class="datatable"></div>
 <div id="content"><pre>Click Search!</pre></div>
+<div id="datatable" class="datatable"></div>
 </article>
 </div>
 <script>
@@ -195,10 +195,11 @@ function loadData(){
 	var round = $("#round").val(),
 		page = $("#page").val();
 
+	$("#datatable").empty();
 	$("#content pre").html('Loading...');
-	$.get('script.php', {q:round,page:page}, function(data){
-		datatable.updateData(JSON.parse(data));
-		$("#content pre").text(data);
+	$.getJSON('script.php', {q:round,page:page}, function(data){
+		datatable.updateData(data);
+		$("#content pre").empty();
 	});
 }
 
