@@ -38,6 +38,7 @@ margin:40px auto;
 }
 
 .datatable table {
+background-color:#fff;
 border:solid #ccc 1px;
 *border-collapse:collapse;
 -moz-border-radius:6px;
@@ -147,7 +148,7 @@ font-family:"Courier New", Courier, monospace;
 -o-user-select:none;
 user-select:none;
 white-space:pre;
-width:620px;
+width:1024px;
 word-wrap:break-word;
 }
 </style>
@@ -195,8 +196,8 @@ function loadData(){
 		page = $("#page").val();
 
 	$("#content pre").html('Loading...');
-	$.getJSON('script.php', {q:round,page:page}, function(data){
-		datatable.updateData(data);
+	$.get('script.php', {q:round,page:page}, function(data){
+		datatable.updateData(JSON.parse(data));
 		$("#content pre").text(data);
 	});
 }
