@@ -85,12 +85,24 @@ border-top:none;
 -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
 box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
 cursor:pointer;
+padding-right:28px;
+position:relative;
 text-shadow:0 1px 0 rgba(255,255,255,.5);
 -webkit-user-select:none;
 -moz-user-select:none;
 -ms-user-select:none;
 -o-user-select:none;
 user-select:none;
+}
+
+.datatable table th .fa {
+position:absolute;
+right:10px;
+}
+
+.datatable table th .fa-sort-asc,
+.datatable table th .fa-sort-desc {
+color:#ffbb1e;
 }
 
 .datatable table th:active {
@@ -163,13 +175,13 @@ word-wrap:break-word;
 Investment Round: <select id="round">
 <option value="all">All</option>
 <option value="seed">Seed</option>
-<option value="a">Round A</option>
-<option value="b">Round B</option>
-<option value="c">Round C</option>
-<option value="d">Round D</option>
-<option value="e">Round E</option>
-<option value="f">Round F</option>
-<option value="g">Round G</option>
+<option value="a">Series A</option>
+<option value="b">Series B</option>
+<option value="c">Series C</option>
+<option value="d">Series D</option>
+<option value="e">Series E</option>
+<option value="f">Series F</option>
+<option value="g">Series G</option>
 <option value="convertible">Convertible</option>
 <option value="unattributed">Unattributed</option>
 <option value="crowd">Crowd</option>
