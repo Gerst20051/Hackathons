@@ -1,12 +1,12 @@
 <?php
-function print_json($data, $die = true){
+function printJSON($data, $die = true){
 	header('Content-Type: application/json; charset=utf8');
-	print_r(trim(json_encode($data /*, JSON_PRETTY_PRINT*/)));
+	print_r(trim(json_encode($data, JSON_PRETTY_PRINT)));
 	if ($die === true) die();
 }
 
-function print_jsonn($data, $die = true){
-	print_r(trim(prettyPrint(json_encode($data /*, JSON_PRETTY_PRINT*/))));
+function prettyPrintJSON($data, $die = true){
+	print_r(trim(prettyPrint(json_encode($data))));
 	if ($die === true) die();
 }
 
@@ -23,19 +23,23 @@ function getJSON($url){
 	$response = getURL($url);
 	if (strlen($response)) {
 		$data = json_decode($response);
-		if (is_array($data) || is_object($data)) {
+		if (!empty($data)) {
 			return $data;
 		}
 	}
 }
 
-function removeTrimWhitespace($array){
-	foreach ($array as $key=>$value) {
-		if (is_string($value)) {
-			$array[$key] = trim(preg_replace('/\s+/', ' ', $value));
+function removeWhitespace($data){
+	if (is_string($data)) {
+		return trim(preg_replace('/\s+/', ' ', $data));
+	} else {
+		foreach ($data as $key=>$value) {
+			if (is_string($value)) {
+				$data[$key] = trim(preg_replace('/\s+/', ' ', $value));
+			}
 		}
 	}
-	return $array;
+	return $data;
 }
 
 function prettyPrint($json){
@@ -97,4 +101,3 @@ function prettyPrint($json){
 	return $result;
 }
 ?>
-

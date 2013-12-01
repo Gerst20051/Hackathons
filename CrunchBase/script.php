@@ -21,6 +21,10 @@ ini_set("display_errors", 1);
 require_once 'phpdom.php';
 require_once 'functions.inc.php';
 
+if (isset($_GET['info'])) {
+	defined('PRINTINFO') or define('PRINTINFO', true);
+}
+
 $aC = array(
 	'url'=>'http://www.crunchbase.com/funding-rounds?',
 	'apikey'=>'ahxcatmbhhr9nzzjrm8r65fg'
@@ -84,31 +88,11 @@ function crawlQuery(){
 		$companyarray = explode('/', $companyhref);
 		$companyid = $companyarray[count($companyarray)-1];
 		$companyjson = json_decode(getURL(getEntityURL($namespaces[0], $companyid)));
-		$location = '';
-		$ipo = null;
-		if (count($companyjson->offices)) {
-			$location = $companyjson->offices[0]->city . ', ';
-			if ($companyjson->offices[0]->country_code == 'USA') {
-				$location .= $companyjson->offices[0]->state_code;
-			} else {
-				$location .= $companyjson->offices[0]->country_code;
-			}
-		}
-		if (!empty($companyjson->ipo)) {
-			$ipo = $companyjson->ipo;
-		}
-		$companyinfo = array(
-			'number_of_employees'=>$companyjson->number_of_employees,
-			'founded_year'=>$companyjson->founded_year,
-			'founded_month'=>$companyjson->founded_month,
-			'founded_day'=>$companyjson->founded_day,
-			'offices'=>$companyjson->offices,
-			'location'=>$location,
-			'total_money_raised'=>$companyjson->total_money_raised,
-			'ipo'=>$ipo
-		);
+		$address = [];
+		$location = "";
 		$investorsdom = $td[4]->find('a');
 		$investors = array();
+
 		foreach ($investorsdom as $index => $link) {
 			$namearray = explode('/', $link->href);
 			$nameid = $namearray[count($namearray)-1];
@@ -117,30 +101,80 @@ function crawlQuery(){
 				'nameid'=>$nameid
 			));
 		}
-		$info = removeTrimWhitespace(array(
+
+		$info = removeWhitespace(array(
 			'date'=>$td[0]->plaintext,
 			'company'=>$td[1]->plaintext,
 			'companyid'=>$companyid,
-			'companyinfo'=>$companyinfo,
 			'round'=>$td[2]->plaintext,
 			'size'=>$td[3]->plaintext,
 			'investors'=>$investors
 		));
-		$datatable = removeTrimWhitespace(array(
+
+		$datatable = removeWhitespace(array(
 			'date'=>$td[0]->plaintext,
 			'company'=>$td[1]->plaintext,
-			'employees'=>intval($companyinfo['number_of_employees']),
-			'location'=>$location,
 			'round'=>$td[2]->plaintext,
 			'size'=>$td[3]->plaintext,
 			'investors'=>count($investors)
 		));
-		array_push($results, $datatable);
+
+		if (!empty($companyjson)) {
+			if (count($companyjson->offices)) {
+				if (!empty($companyjson->offices[0]->address)) {
+					$address[] = $companyjson->offices[0]->address;
+				}
+				if (!empty($companyjson->offices[0]->address2)) {
+					$address[] = $companyjson->offices[0]->address2;
+				}
+				if (!empty($companyjson->offices[0]->zip_code)) {
+					$address[] = $companyjson->offices[0]->zip_code;
+				}
+				if (!empty($companyjson->offices[0]->city)) {
+					$address[] = $companyjson->offices[0]->city;
+				}
+				if (empty($address) && !empty($companyjson->offices[0]->description)) {
+					$address[] = $companyjson->offices[0]->description;
+				}
+				if (!empty($companyjson->offices[0]->state_code)) {
+					$address[] = $companyjson->offices[0]->state_code;
+				}
+				if (!empty($companyjson->offices[0]->country_code)) {
+					$address[] = $companyjson->offices[0]->country_code;
+				}
+				$location = implode(', ', array_slice($address, -3, 3));
+			}
+			$companyinfo = array(
+				'number_of_employees'=>$companyjson->number_of_employees,
+				'founded_year'=>$companyjson->founded_year,
+				'founded_month'=>$companyjson->founded_month,
+				'founded_day'=>$companyjson->founded_day,
+				'offices'=>$companyjson->offices,
+				'location'=>$location,
+				'total_money_raised'=>$companyjson->total_money_raised,
+				'ipo'=>$companyjson->ipo
+			);
+
+			$info['companyinfo'] = $companyinfo;
+			$datatable['employees'] = $companyinfo['number_of_employees'];
+			$datatable['location'] = $location;
+
+			if (empty($datatable['employees'])) {
+				$datatable['employees'] = 'N/A';
+			}
+			if (empty($datatable['location'])) {
+				$datatable['location'] = 'N/A';
+			}
+		} else {
+			$datatable['employees'] = 'N/A';
+			$datatable['location'] = 'N/A';
+		}
+
+		array_push($results, (defined('PRINTINFO') ? $info : $datatable));
 	}
 
-	print_jsonn($results);
+	prettyPrintJSON($results);
 }
 
 crawlQuery();
 ?>
-
