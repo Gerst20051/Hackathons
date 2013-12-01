@@ -88,10 +88,10 @@ function crawlQuery(){
 		$companyarray = explode('/', $companyhref);
 		$companyid = $companyarray[count($companyarray)-1];
 		$companyjson = json_decode(getURL(getEntityURL($namespaces[0], $companyid)));
-		$address = [];
-		$location = "";
 		$investorsdom = $td[4]->find('a');
 		$investors = array();
+		$address = array();
+		$location = "";
 
 		foreach ($investorsdom as $index => $link) {
 			$namearray = explode('/', $link->href);
@@ -158,6 +158,7 @@ function crawlQuery(){
 			$info['companyinfo'] = $companyinfo;
 			$datatable['employees'] = $companyinfo['number_of_employees'];
 			$datatable['location'] = $location;
+			$datatable['founded'] = $companyinfo['founded_year'];
 
 			if (empty($datatable['employees'])) {
 				$datatable['employees'] = 'N/A';
@@ -165,9 +166,13 @@ function crawlQuery(){
 			if (empty($datatable['location'])) {
 				$datatable['location'] = 'N/A';
 			}
+			if (empty($datatable['founded'])) {
+				$datatable['founded'] = 'N/A';
+			}
 		} else {
 			$datatable['employees'] = 'N/A';
 			$datatable['location'] = 'N/A';
+			$datatable['founded'] = 'N/A';
 		}
 
 		array_push($results, (defined('PRINTINFO') ? $info : $datatable));
